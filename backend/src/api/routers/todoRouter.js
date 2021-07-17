@@ -2,6 +2,8 @@ const router = require("express").Router();
 const Todo = require("../models/todoModel");
 const convert = require('color-convert');
 const {check, validationResult} = require('express-validator');
+const _ = require('lodash');
+
 
 // @route    POST http://localhost:5000/todo
 // @desc     Save new todo to the database
@@ -161,9 +163,47 @@ router.get('/todo', async(req, res) => {
         //return error status if search result is empty
         if(Object.keys(filteredTodos).length === 0)
             return res.status(400).json({
-                erroMessage: "Invalid filter URL"
+                erroMessage: "Could not find match"
             });
 
+        //If group by is specified data are grouped by month or year
+        //URL: http://localhost:5000/todo?&groupBy=month/year
+        if(filters.hasOwnProperty('groupBy')){
+
+            //creating new json array with only title,month and year properties
+            var newJsonArray = []
+            for(var i = 0; i < filteredTodos.length; i++) {
+                var obj = filteredTodos[i];
+
+                let Year = obj.timestamp.getFullYear();
+                let Month = obj.timestamp.getMonth()+1;
+
+                var newObj = {
+                    "todo_title" : obj.title,   
+                    "month" : Month,
+                    "year" : Year     
+                };
+                newJsonArray.push(newObj)
+            }
+            //grouping by month 
+            if(filters["groupBy"]=="month"){
+
+                return res.send( _.groupBy(newJsonArray, "month"));
+               
+            }
+            //grouping by year 
+            else if(filters["groupBy"]=="year"){
+                return res.send( _.groupBy(newJsonArray, "year"));
+            }
+            //if error occurs 
+            else{
+                return res.status(400).json({
+                    erroMessage: "Could not find match"
+                });
+            }
+        }
+
+        //if groupBy not specified
         res.send(filteredTodos);
     }catch(err){
         console.log(err.message);
