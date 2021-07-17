@@ -45,8 +45,7 @@ app.listen(PORT,()=>{
     console.log(`Server running on PORT: ${PORT}`)
 })
 
-
-
-
+//set up routes
+app.use("/", require("./api/routers/todoRouter"))
 
 
