@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require ('dotenv');
 const app = express();
-const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
 //creating local server
@@ -22,10 +21,7 @@ app.get("/", (req, res) => {
 
 //middleware to pass json objects into req.body
 app.use(express.json());
-//middleware to pass cookie into req.cookies
-app.use(cookieParser());
 
- 
 //connect to mongoDB
 const URL= process.env.MONGODB_URL;
 
