@@ -4,36 +4,36 @@ const {check, validationResult} = require('express-validator');
 
 
 
-//@route    POST http://localhost:5000/todo
-//@desc     Save new todo to the database
-//@access   public
-// router.post("/", [
-//         // @validations
-//         check('title', 'title is empty').not().isEmpty().trim().escape(),
-//         check('timestamp', 'Invalid timestamp').not().isEmpty().trim().escape().matches(/^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/),
-//         check('color', 'Invalid Color filed').not().isEmpty().trim().escape().isHexColor(),
-//         check('completed', 'Invalid completed status').not().isEmpty().isBoolean(),
-//         check('priority', 'priority is empty').not().isEmpty().trim().escape(),
-//     ],
-//     async(req,res)=>{
-//         try{
-//             const {title, timestamp, color, completed, priority} = req.body;
+@route    POST http://localhost:5000/todo
+@desc     Save new todo to the database
+@access   public
+router.post("/", [
+        // @validations
+        check('title', 'title is empty').not().isEmpty().trim().escape(),
+        check('timestamp', 'Invalid timestamp').not().isEmpty().trim().escape().matches(/^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/),
+        check('color', 'Invalid Color filed').not().isEmpty().trim().escape().isHexColor(),
+        check('completed', 'Invalid completed status').not().isEmpty().isBoolean(),
+        check('priority', 'priority is empty').not().isEmpty().trim().escape(),
+    ],
+    async(req,res)=>{
+        try{
+            const {title, timestamp, color, completed, priority} = req.body;
             
-//             //handling request validations
-//              const error = validationResult(req);
-//              if(!error.isEmpty())
-//                  return res.status(400).json({
-//                      erroMessage: error
-//                  });
+            //handling request validations
+             const error = validationResult(req);
+             if(!error.isEmpty())
+                 return res.status(400).json({
+                     erroMessage: error
+                 });
 
-//             const newTodo = new Todo({title, timestamp, color, completed, priority})
-//             await newTodo.save()
-//             res.json("Todo Added");
-//         }catch(err){
-//             console.error(err);
-//             res.status(500).send({status: "Error with adding todo", error: err.message});
-//         }
-// });
+            const newTodo = new Todo({title, timestamp, color, completed, priority})
+            await newTodo.save()
+            res.json("Todo Added");
+        }catch(err){
+            console.error(err);
+            res.status(500).send({status: "Error with adding todo", error: err.message});
+        }
+});
 
 
 
