@@ -4,9 +4,9 @@ const {check, validationResult} = require('express-validator');
 
 
 
-@route    POST http://localhost:5000/todo
-@desc     Save new todo to the database
-@access   public
+// @route    POST http://localhost:5000/todo
+// @desc     Save new todo to the database
+// @access   public
 router.post("/", [
         // @validations
         check('title', 'title is empty').not().isEmpty().trim().escape(),
@@ -108,24 +108,24 @@ router.post("/", [
 //         }
 // });
 
-// //@route    DELETE http://localhost:5000/todo/:id
-// //@desc     Dlete todo with a perticular ID
-// //@access   public
-// router.delete("/:id", async(req,res)=>{
-//     try{
-//         let Id = req.params.id;
+//@route    DELETE http://localhost:5000/todo/:id
+//@desc     Dlete todo with a perticular ID
+//@access   public
+router.delete("/:id", async(req,res)=>{
+    try{
+        let Id = req.params.id;
 
-//         const deletedTodo = await Todo.findByIdAndDelete(Id)
-//         if(!deletedTodo)
-//             return res.status(400).json({
-//                 erroMessage: "Todo not found!"
-//             });
-//         res.status(200).send({status: "Todo deleted!"});
-//     }catch(err){
-//         console.log(err.message);
-//         res.status(500).send({status: "Error with deleting todo", error: err.message});
-//     }
-// });
+        const deletedTodo = await Todo.findByIdAndDelete(Id)
+        if(!deletedTodo)
+            return res.status(400).json({
+                erroMessage: "Todo not found!"
+            });
+        res.status(200).send({status: "Todo deleted!"});
+    }catch(err){
+        console.log(err.message);
+        res.status(500).send({status: "Error with deleting todo", error: err.message});
+    }
+});
 
 
 module.exports = router;
