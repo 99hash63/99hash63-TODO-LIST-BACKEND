@@ -46,6 +46,6 @@ app.listen(PORT,()=>{
 })
 
 //set up routes
-app.use("/todo", require("./api/routers/todoRouter"))
+app.use("/", require("./api/routers/todoRouter"))
 
 
