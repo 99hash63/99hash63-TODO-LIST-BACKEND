@@ -103,8 +103,8 @@ router.delete("/todo/:id", async(req,res)=>{
     }
 });
 
-//@route    GET http://localhost:5000/todo?any=any
-//@desc     filter todo by query string
+//@route    GET http://localhost:5000/todo?any=any&any=any&any=any
+//@desc     filter todo by any query keyword (FILTER COMBINATIONS ARE ALSO WORKING)
 //@access   public
 router.get('/todo', async(req, res) => {
     try{
@@ -113,25 +113,27 @@ router.get('/todo', async(req, res) => {
         //retrieve all todo data from database
         const allTodoData = await Todo.find()
 
-        //Method to filter by any query keyword
+        //Method to filter todo by any query keyword set
         const filteredTodos = allTodoData.filter(todo => {
             let isValid = true;
             for (key in filters) {
                 //returns todos which contains the word in serch keyword
+                //URL: http://localhost:5000/todo?searchKeyword=any
                 if(key == "searchKeyword"){
                     isValid = isValid &&  todo["title"].includes(filters[key]);
                 }
                 //returns todos which have the same priority passed in url
-                else if(key == "filterByPriority"){
+                //URL: http://localhost:5000/todo?filterByPriority=any
+                if(key == "filterByPriority"){
                     isValid = isValid && todo["priority"] == filters[key];
                 }
                 //returns todos which have the color code of the color specified in url
-                else if(key == "filterByColor"){
+                //URL: http://localhost:5000/todo?filterByColor=any
+                if(key == "filterByColor"){
                     isValid = isValid && todo["color"] == ('#'+convert.keyword.hex(filters[key]));
-                    console.log("hey")
                 }
                 //filter todos by start date or end date
-                else if(key == "startDate" || key == "endDate"){
+                if(key == "startDate" || key == "endDate"){
                     let Year = todo["timestamp"].getFullYear();
                     let Month = todo["timestamp"].getMonth()+1;
                     if(Month<10)
@@ -142,14 +144,16 @@ router.get('/todo', async(req, res) => {
                     const retrievedFullDate = (Year+"-"+Month+"-"+Day)
                     const DatePassedInURL = (filters[key])
                     //returns todos that are created after the specifeid date if url key is startDate
-                    if(key == "startDate")
+                    //URL: http://localhost:5000/todo?startDate=any
+                    if(key == "startDate"){
                         isValid = isValid && DatePassedInURL<=retrievedFullDate
+                    }
+                       
                     //returns todos that are created before the specifeid date if url key is endDate
-                    if(key == "endDate")
+                    //URL: http://localhost:5000/todo?endDate=any
+                    if(key == "endDate"){
                         isValid = isValid && DatePassedInURL>=retrievedFullDate
-                }
-                else{
-                    isValid = false;
+                    }
                 }
             }
             return isValid;
