@@ -1,8 +1,7 @@
 const router = require("express").Router();
 const Todo = require("../models/todoModel");
+const convert = require('color-convert');
 const {check, validationResult} = require('express-validator');
-
-
 
 // @route    POST http://localhost:5000/todo
 // @desc     Save new todo to the database
@@ -35,8 +34,6 @@ router.post("/todo", [
         }
 });
 
-
-
 //@route    GET http://localhost:5000/todos
 //@desc     Get all todos from the database
 //@access   public
@@ -48,29 +45,7 @@ router.get("/todos", async(req,res)=>{
         console.log(err);
         res.status(500).send({status: "Error with getting todos", error: err.message});
     }
-})
-
-
-
-// //@route    GET http://localhost:5000/categories/get/:id
-// //@desc     Get category for a perticular ID
-// //@access   public
-// router.get('/get/:id', async(req, res) => {
-//     try{
-//         let id = req.params.id;
-
-//         const CategoryRequset = await Category.findById(id)
-//         if(!CategoryRequset)
-//             return res.status(400).json({
-//                 erroMessage: "invalid id"
-//             });
-//         res.json(CategoryRequset);
-//     }catch(err){
-//         console.log(err);
-//         res.status(500).send({status: "Error with getting category", error: err.message});
-//     }
-// });
-   
+});
 
 //@route    UPDATE http://localhost:5000/todo/60f29abc4afaa76358ec5218
 //@desc     Update todo with a perticular ID
@@ -125,6 +100,70 @@ router.delete("/todo/:id", async(req,res)=>{
     }catch(err){
         console.log(err.message);
         res.status(500).send({status: "Error with deleting todo", error: err.message});
+    }
+});
+
+//@route    GET http://localhost:5000/todo?any=any
+//@desc     filter todo by query string
+//@access   public
+router.get('/todo', async(req, res) => {
+    try{
+        //get filter queries passed in the url
+        const filters = req.query;
+        //retrieve all todo data from database
+        const allTodoData = await Todo.find()
+
+        //Method to filter by any query keyword
+        const filteredTodos = allTodoData.filter(todo => {
+            let isValid = true;
+            for (key in filters) {
+                //returns todos which contains the word in serch keyword
+                if(key == "searchKeyword"){
+                    isValid = isValid &&  todo["title"].includes(filters[key]);
+                }
+                //returns todos which have the same priority passed in url
+                else if(key == "filterByPriority"){
+                    isValid = isValid && todo["priority"] == filters[key];
+                }
+                //returns todos which have the color code of the color specified in url
+                else if(key == "filterByColor"){
+                    isValid = isValid && todo["color"] == ('#'+convert.keyword.hex(filters[key]));
+                    console.log("hey")
+                }
+                //filter todos by start date or end date
+                else if(key == "startDate" || key == "endDate"){
+                    let Year = todo["timestamp"].getFullYear();
+                    let Month = todo["timestamp"].getMonth()+1;
+                    if(Month<10)
+                        Month = '0' + Month
+                    let Day = todo["timestamp"].getDate()-1;
+                    if(Day<10)
+                        Day = '0' + Day
+                    const retrievedFullDate = (Year+"-"+Month+"-"+Day)
+                    const DatePassedInURL = (filters[key])
+                    //returns todos that are created after the specifeid date if url key is startDate
+                    if(key == "startDate")
+                        isValid = isValid && DatePassedInURL<=retrievedFullDate
+                    //returns todos that are created before the specifeid date if url key is endDate
+                    if(key == "endDate")
+                        isValid = isValid && DatePassedInURL>=retrievedFullDate
+                }
+                else{
+                    isValid = false;
+                }
+            }
+            return isValid;
+        });
+        //return error status if search result is empty
+        if(Object.keys(filteredTodos).length === 0)
+            return res.status(400).json({
+                erroMessage: "Invalid filter URL"
+            });
+
+        res.send(filteredTodos);
+    }catch(err){
+        console.log(err.message);
+        res.status(500).send({status: "Error with getting todo", error: err.message});
     }
 });
 
