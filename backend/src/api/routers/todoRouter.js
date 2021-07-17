@@ -106,7 +106,7 @@ router.delete("/todo/:id", async(req,res)=>{
 });
 
 //@route    GET http://localhost:5000/todo?any=any&any=any&any=any
-//@desc     filter todo by any query keyword (FILTER COMBINATIONS ARE ALSO WORKING)
+//@desc     filter todo by any query keyword (MULTIPLE FILTERS ARE ALSO WORKING)
 //@access   public
 router.get('/todo', async(req, res) => {
     try{
@@ -166,7 +166,7 @@ router.get('/todo', async(req, res) => {
                 erroMessage: "Could not find match"
             });
 
-        //If group by is specified data are grouped by month or year
+        //If group by is specified, data is grouped by month or year
         //URL: http://localhost:5000/todo?&groupBy=month/year
         if(filters.hasOwnProperty('groupBy')){
 
